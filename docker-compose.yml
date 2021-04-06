@@ -1,0 +1,43 @@
+version: "3.9"
+   
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=Survey_DB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Difficultpasswd123
+    ports:
+      - "5432:5432"
+  backend:
+    restart: always
+    build: ./backend
+    # command: python manage.py makemigrations
+    command: ["/bin/bash", "./entrypoint.sh"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
+    depends_on:
+      - db
+  frontend:
+    build: ./frontend
+    volumes: 
+      - vue_dist:/usr/src/app/frontend/dist
+  nginx:
+    restart: always
+    build: ./nginx/
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
+      - vue_dist:/app/dist
+volumes: 
+  static_volume:
+    name: static_vol
+  media_volume:
+    name: media_vol
+  vue_dist:
+    name: vue_vol

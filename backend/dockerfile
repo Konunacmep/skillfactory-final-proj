@@ -1,0 +1,10 @@
+FROM python:3.9.2
+ENV PYTHONUNBUFFERED=1
+RUN mkdir -p /usr/src/app/static
+RUN mkdir -p /usr/src/app/media
+WORKDIR /usr/src/app/backend
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install -f -y postgresql-client
+COPY . .
+RUN python3 manage.py collectstatic --noinput
